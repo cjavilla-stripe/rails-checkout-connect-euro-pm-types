@@ -1,0 +1,19 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Stripe checkout session:</strong>
+  <%= @order.stripe_checkout_session_id %>
+</p>
+
+<p>
+  <strong>Store:</strong>
+  <%= @order.store_id %>
+</p>
+
+<p>
+  <strong>Status:</strong>
+  <%= @order.status %>
+</p>
+
+<%= link_to 'Edit', edit_order_path(@order) %> |
+<%= link_to 'Back', orders_path %>

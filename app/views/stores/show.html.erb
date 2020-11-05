@@ -1,0 +1,66 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Name:</strong>
+  <%= @store.name %>
+</p>
+
+<p>
+  <strong>Country:</strong>
+  <%= @store.country %>
+</p>
+
+<p>
+  <strong>Stripe account:</strong>
+  <%= @store.stripe_account_id %>
+</p>
+
+<p>
+  <strong>Supported Payment Method Types</strong>
+  <ul>
+    <% @store.pm_types.each do |t| %>
+      <li><%= t %></li>
+    <% end %>
+  </ul>
+</p>
+
+<p>
+  <strong>Checkout</strong>
+  <button type="submit" id="btn">Pay!</button>
+</p>
+
+<script charset="utf-8">
+  const btn = document.querySelector('#btn');
+  btn.addEventListener('click', function(e) {
+    e.preventDefault();
+    fetch('/orders.json', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        order: {
+          store_id: "<%= @store.id %>",
+        },
+        authenticity_token: "<%= form_authenticity_token %>",
+      }),
+    })
+    .then((response) => response.json())
+    .then((order) => {
+      var stripe = Stripe('<%= Rails.application.credentials.stripe[:public_key] %>', {
+        stripeAccount: "<%= @store.stripe_account_id %>",
+      });
+      // redirect to checkout
+      stripe.redirectToCheckout({
+        sessionId: order.stripe_checkout_session_id
+      });
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+    });
+  });
+</script>
+
+
+<%= link_to 'Edit', edit_store_path(@store) %> |
+<%= link_to 'Back', stores_path %>
